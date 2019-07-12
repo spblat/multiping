@@ -27,7 +27,7 @@ Optional Flags:
 This is $0 version 0.0.
  
 VERSION HISTORY
-2019-04-01			First version 
+2019-04-01 
 EOF
         exit();
 }
@@ -41,7 +41,7 @@ EOF
 # 
 # To Do:
 # * Log to syslog or twitter or someplace
-# * Auto-fail from one tunnel to another?
+# * Auto-fail from one tunnel to another
  
 ##############################################################################
 # MAIN CODE ##################################################################
@@ -65,7 +65,8 @@ debug("we'll do $main::COUNT packets to $main::HOST");
 print Dumper(@interfaces) if $main::DEBUG;
 
 # /bin/ping -I tun0 -c10 -q -A ping.ubnt.com
-my $output = `date`;
+# my $output = `date`; # or blank if using syslog
+my $output = "";
 chomp $output;
 
 foreach (@interfaces) {
@@ -80,7 +81,8 @@ foreach (@interfaces) {
 	$result[4] =~ /(\S+) ms/;
 	my @rtt = split /\//, $1; # min/avg/max/dev
 	debug("rtt $rtt[1]");
-	$output .= "\t$packetloss%\t$rtt[1] ms";
+	$rtt[1] = $rtt[1] ? $rtt[1] : "**** $_ DOWN ****";
+	$output .= " $packetloss% $rtt[1] ms";
 }
 
 print $output . "\n";
